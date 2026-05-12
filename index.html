@@ -3,8 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Expense Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DigiKhata</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
@@ -19,34 +19,41 @@
 
     <header class="navbar">
         <div class="logo">
-            <i class="fas fa-wallet"></i> SmartExpense
+            <i class="fas fa-wallet"></i> DigiKhata
         </div>
-        <button id="theme-toggle" class="theme-btn" aria-label="Toggle Dark Mode">
-            <i class="fas fa-moon"></i>
-        </button>
+        <select id="theme-toggle" class="theme-select" aria-label="Select Theme">
+            <option value="light">Light Mode</option>
+            <option value="dark">Dark Mode</option>
+        </select>
     </header>
 
     <main class="container">
         <!-- Top Section: Overview -->
-        <section class="overview">
+        <section class="overview view-section mobile-active" id="overview-section">
             <div class="card balance-card">
                 <h3>Total Balance</h3>
                 <h2 id="total-balance">₹0.00</h2>
             </div>
-            <div class="card income-card">
-                <h3>Total Income <i class="fas fa-arrow-up"></i></h3>
-                <p id="total-income">₹0.00</p>
-            </div>
-            <div class="card expense-card">
-                <h3>Total Expense <i class="fas fa-arrow-down"></i></h3>
-                <p id="total-expense">₹0.00</p>
+            <div class="overview-grid">
+                <div class="card income-card">
+                    <h3>Total Income <i class="fas fa-arrow-up"></i></h3>
+                    <p id="total-income">₹0.00</p>
+                </div>
+                <div class="card expense-card">
+                    <h3>Total Expense <i class="fas fa-arrow-down"></i></h3>
+                    <p id="total-expense">₹0.00</p>
+                </div>
+                <div class="card savings-card">
+                    <h3>Total Savings <i class="fas fa-piggy-bank"></i></h3>
+                    <p id="total-savings">₹0.00</p>
+                </div>
             </div>
         </section>
 
         <div class="grid-layout">
             <!-- Left Column: Form & Chart -->
             <div class="left-column">
-                <section class="add-transaction card">
+                <section class="add-transaction card view-section" id="view-add">
                     <h3 id="form-title">Add New Transaction</h3>
                     <form id="transaction-form">
                         <input type="hidden" id="edit-id" value="">
@@ -74,6 +81,8 @@
                                     <option value="Bills">Bills</option>
                                     <option value="Shopping">Shopping</option>
                                     <option value="Salary">Salary</option>
+                                    <option value="Health">Health</option>
+                                    <option value="Savings">Savings</option>
                                     <option value="Other">Other</option>
                                 </select>
                             </div>
@@ -89,8 +98,8 @@
                         </div>
                     </form>
                 </section>
-
-                <section class="chart-container card">
+                <!--Expence chart (pie chart)-->
+                <section class="chart-container card view-section mobile-active" id="view-analytics">
                     <h3>Expense Distribution</h3>
                     <div class="canvas-wrapper">
                         <canvas id="expense-chart"></canvas>
@@ -100,7 +109,7 @@
 
             <!-- Right Column: Recent Transactions -->
             <div class="right-column">
-                <section class="transactions card">
+                <section class="transactions card view-section mobile-active" id="view-transactions">
                     <div class="section-header">
                         <h3>Recent Transactions</h3>
                         <div class="controls">
@@ -112,6 +121,8 @@
                                 <option value="Bills">Bills</option>
                                 <option value="Shopping">Shopping</option>
                                 <option value="Salary">Salary</option>
+                                <option value="Health">Health</option>
+                                <option value="Savings">Savings</option>
                                 <option value="Other">Other</option>
                             </select>
                         </div>
@@ -129,6 +140,23 @@
             </div>
         </div>
     </main>
+
+    <!-- Bottom Navigation Bar for Mobile -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-view="home">
+            <i class="fas fa-list"></i>
+            <span>Home</span>
+        </button>
+        <button class="nav-item add-fab" data-view="add">
+            <div class="fab-icon-wrapper">
+                <i class="fas fa-plus"></i>
+            </div>
+        </button>
+        <button class="nav-item" data-view="analytics">
+            <i class="fas fa-chart-pie"></i>
+            <span>Analytics</span>
+        </button>
+    </nav>
 
     <script src="script.js"></script>
 </body>

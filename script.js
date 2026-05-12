@@ -1,6 +1,6 @@
 /**
- * Smart Expense Tracker
- * Core Javascript Logic
+ * DigiKhata
+ * Core Javascript Logic with Mobile UI Support
  */
 
 // State Management
@@ -12,6 +12,7 @@ const elements = {
     totalBalance: document.getElementById('total-balance'),
     totalIncome: document.getElementById('total-income'),
     totalExpense: document.getElementById('total-expense'),
+    totalSavings: document.getElementById('total-savings'),
     list: document.getElementById('transactions-list'),
     form: document.getElementById('transaction-form'),
     title: document.getElementById('title'),
@@ -26,7 +27,14 @@ const elements = {
     searchInput: document.getElementById('search-input'),
     filterCategory: document.getElementById('filter-category'),
     emptyState: document.getElementById('empty-state'),
-    themeToggle: document.getElementById('theme-toggle')
+    themeToggle: document.getElementById('theme-toggle'),
+
+    // Mobile Views
+    navItems: document.querySelectorAll('.nav-item'),
+    viewOverview: document.getElementById('overview-section'),
+    viewAdd: document.getElementById('view-add'),
+    viewAnalytics: document.getElementById('view-analytics'),
+    viewTransactions: document.getElementById('view-transactions')
 };
 
 // Utilities & Formatting
@@ -44,6 +52,8 @@ const categoryIcons = {
     'Bills': 'fa-file-invoice-dollar',
     'Shopping': 'fa-bag-shopping',
     'Salary': 'fa-money-bill-wave',
+    'Health': 'fa-heart-pulse',
+    'Savings': 'fa-piggy-bank',
     'Other': 'fa-circle-question'
 };
 
@@ -89,11 +99,17 @@ const updateMetrics = () => {
         .filter(t => t.type === 'expense')
         .reduce((acc, t) => acc + parseFloat(t.amount), 0);
 
+    // Calculate specifically categorized savings
+    const savings = transactions
+        .filter(t => t.category === 'Savings')
+        .reduce((acc, t) => acc + parseFloat(t.amount), 0);
+
     const total = income - expense;
 
     elements.totalBalance.innerText = formatCurrency(total);
     elements.totalIncome.innerText = formatCurrency(income);
     elements.totalExpense.innerText = formatCurrency(expense);
+    elements.totalSavings.innerText = formatCurrency(savings);
 
     // Dynamic color coding for balance
     elements.totalBalance.style.color = total < 0 ? 'var(--danger-color)' : 'var(--primary-color)';
@@ -143,7 +159,8 @@ const updateChart = () => {
         return;
     }
 
-    const brandColors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#06b6d4'];
+    // Distinct colors for each category slice
+    const brandColors = ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#0ea5e9', '#ec4899'];
 
     expenseChart = new Chart(ctx, {
         type: 'doughnut',
@@ -163,15 +180,15 @@ const updateChart = () => {
             cutout: '65%',
             plugins: {
                 legend: {
-                    position: 'bottom',
+                    position: window.innerWidth <= 768 ? 'right' : 'bottom',
                     labels: {
                         color: isDark ? '#f9fafb' : '#1f2937',
-                        padding: 20,
+                        padding: 15,
                         usePointStyle: true,
                         pointStyle: 'circle',
                         font: {
                             family: 'Inter',
-                            size: 13
+                            size: 12
                         }
                     }
                 },
@@ -326,6 +343,11 @@ elements.form.addEventListener('submit', (e) => {
 
     updateLocalStorage();
     initRender();
+
+    // Switch to home view on mobile if added successfully
+    if (window.innerWidth <= 768) {
+        switchMobileView('home');
+    }
 });
 
 window.deleteTransaction = (id) => {
@@ -351,12 +373,22 @@ window.editTransaction = (id) => {
         elements.submitBtnText.innerText = 'Update Transaction';
         elements.cancelEditBtn.classList.remove('hidden');
 
-        // Scroll to up nicely
-        elements.form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // On mobile, switch to add view to edit
+        if (window.innerWidth <= 768) {
+            switchMobileView('add');
+        } else {
+            // Scroll up nicely on desktop
+            elements.form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
     }
 };
 
-elements.cancelEditBtn.addEventListener('click', resetForm);
+elements.cancelEditBtn.addEventListener('click', () => {
+    resetForm();
+    if (window.innerWidth <= 768) {
+        switchMobileView('home');
+    }
+});
 
 elements.searchInput.addEventListener('input', renderList);
 elements.filterCategory.addEventListener('change', renderList);
@@ -370,23 +402,76 @@ elements.type.addEventListener('change', () => {
     }
 });
 
+// Mobile Navigation Logic
+const switchMobileView = (viewName) => {
+    // Only applied on mobile CSS (display matches mobile-active class)
+
+    // Update active nav item
+    elements.navItems.forEach(btn => {
+        if (btn.dataset.view === viewName) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    // Remove active class from all sections
+    elements.viewOverview.classList.remove('mobile-active');
+    elements.viewAdd.classList.remove('mobile-active');
+    elements.viewAnalytics.classList.remove('mobile-active');
+    elements.viewTransactions.classList.remove('mobile-active');
+
+    // Add active class to corresponding sections
+    if (viewName === 'home') {
+        elements.viewOverview.classList.add('mobile-active');
+        elements.viewTransactions.classList.add('mobile-active');
+    } else if (viewName === 'analytics') {
+        elements.viewOverview.classList.add('mobile-active');
+        elements.viewAnalytics.classList.add('mobile-active');
+        // Need to update chart specifically when taking place in DOM as display might reset canvas size
+        setTimeout(updateChart, 50);
+    } else if (viewName === 'add') {
+        elements.viewAdd.classList.add('mobile-active');
+    }
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+elements.navItems.forEach(item => {
+    item.addEventListener('click', () => {
+        switchMobileView(item.dataset.view);
+    });
+});
+
 // Theme Management
 const applyTheme = (isDark) => {
     if (isDark) {
         document.body.classList.add('dark-mode');
-        elements.themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        elements.themeToggle.value = 'dark';
     } else {
         document.body.classList.remove('dark-mode');
-        elements.themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        elements.themeToggle.value = 'light';
     }
 };
 
-elements.themeToggle.addEventListener('click', () => {
-    const isDark = !document.body.classList.contains('dark-mode');
+elements.themeToggle.addEventListener('change', (e) => {
+    const isDark = e.target.value === 'dark';
     applyTheme(isDark);
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
     updateChart(); // Re-render chart for color adaptation
 });
+
+// Watch resize events for correct desktop/mobile view resetting
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+        // Desktop handles all viewing purely with CSS block/grid
+        // Let's just update the chart once on resize to fix any layout shifts
+        clearTimeout(window.resizeTimer);
+        window.resizeTimer = setTimeout(updateChart, 250);
+    }
+});
+
 
 // App Initialization
 const initRender = () => {
@@ -405,6 +490,11 @@ const initApp = () => {
         applyTheme(true);
     } else {
         applyTheme(false);
+    }
+
+    // Setup mobile view default if needed
+    if (window.innerWidth <= 768) {
+        switchMobileView('home');
     }
 
     setDateToToday();
