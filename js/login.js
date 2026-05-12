@@ -38,6 +38,6 @@ document.getElementById("login-form").addEventListener("submit", function (e) {
 
   // Simulate network request for demo purposes
   setTimeout(() => {
-    window.location.href = "index.html";
+    window.location.href = "app.html";
   }, 1200);
 });
