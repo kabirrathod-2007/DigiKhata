@@ -3,162 +3,155 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DigiKhata</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiKhata - Smart Finance Management</title>
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="home.css">
 </head>
 
-<body class="light-mode">
-    <div class="toast-container" id="toast-container"></div>
+<body>
 
-    <header class="navbar">
-        <div class="logo">
-            <i class="fas fa-wallet"></i> DigiKhata
+    <!-- Background Gradients -->
+    <div class="bg-gradient-top"></div>
+    <div class="bg-gradient-bottom"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="#" class="logo">
+            <i class="fas fa-wallet"></i>
+            DigiKhata
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="login.html" class="btn-primary"
+                    style="padding: 0.4rem 1.2rem; background: transparent; border: 1px solid var(--primary-green);">Login</a>
+            </li>
+        </ul>
+
+        <div class="mobile-toggle">
+            <i class="fas fa-bars"></i>
         </div>
-        <select id="theme-toggle" class="theme-select" aria-label="Select Theme">
-            <option value="light">Light Mode</option>
-            <option value="dark">Dark Mode</option>
-        </select>
-    </header>
-
-    <main class="container">
-        <!-- Top Section: Overview -->
-        <section class="overview view-section mobile-active" id="overview-section">
-            <div class="card balance-card">
-                <h3>Total Balance</h3>
-                <h2 id="total-balance">₹0.00</h2>
-            </div>
-            <div class="overview-grid">
-                <div class="card income-card">
-                    <h3>Total Income <i class="fas fa-arrow-up"></i></h3>
-                    <p id="total-income">₹0.00</p>
-                </div>
-                <div class="card expense-card">
-                    <h3>Total Expense <i class="fas fa-arrow-down"></i></h3>
-                    <p id="total-expense">₹0.00</p>
-                </div>
-                <div class="card savings-card">
-                    <h3>Total Savings <i class="fas fa-piggy-bank"></i></h3>
-                    <p id="total-savings">₹0.00</p>
-                </div>
-            </div>
-        </section>
-
-        <div class="grid-layout">
-            <!-- Left Column: Form & Chart -->
-            <div class="left-column">
-                <section class="add-transaction card view-section" id="view-add">
-                    <h3 id="form-title">Add New Transaction</h3>
-                    <form id="transaction-form">
-                        <input type="hidden" id="edit-id" value="">
-                        <div class="form-group">
-                            <label for="title">Title</label>
-                            <input type="text" id="title" placeholder="e.g. Groceries" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="amount">Amount (₹)</label>
-                            <input type="number" id="amount" placeholder="e.g. 500" step="0.01" required>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="type">Type</label>
-                                <select id="type" required>
-                                    <option value="expense">Expense</option>
-                                    <option value="income">Income</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="category">Category</label>
-                                <select id="category" required>
-                                    <option value="Food">Food</option>
-                                    <option value="Travel">Travel</option>
-                                    <option value="Bills">Bills</option>
-                                    <option value="Shopping">Shopping</option>
-                                    <option value="Salary">Salary</option>
-                                    <option value="Health">Health</option>
-                                    <option value="Savings">Savings</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="date">Date</label>
-                            <input type="date" id="date" required>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn primary-btn"><i class="fas fa-plus"></i> <span
-                                    id="submit-btn-text">Add Transaction</span></button>
-                            <button type="button" class="btn outline-btn hidden" id="cancel-edit-btn">Cancel</button>
-                        </div>
-                    </form>
-                </section>
-                <!--Expence chart (pie chart)-->
-                <section class="chart-container card view-section mobile-active" id="view-analytics">
-                    <h3>Expense Distribution</h3>
-                    <div class="canvas-wrapper">
-                        <canvas id="expense-chart"></canvas>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Right Column: Recent Transactions -->
-            <div class="right-column">
-                <section class="transactions card view-section mobile-active" id="view-transactions">
-                    <div class="section-header">
-                        <h3>Recent Transactions</h3>
-                        <div class="controls">
-                            <input type="text" id="search-input" placeholder="Search by title..." autocomplete="off">
-                            <select id="filter-category" aria-label="Filter by Category">
-                                <option value="All">All Categories</option>
-                                <option value="Food">Food</option>
-                                <option value="Travel">Travel</option>
-                                <option value="Bills">Bills</option>
-                                <option value="Shopping">Shopping</option>
-                                <option value="Salary">Salary</option>
-                                <option value="Health">Health</option>
-                                <option value="Savings">Savings</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="transactions-list" id="transactions-list">
-                        <!-- Transactions injected by JS -->
-                    </div>
-                    <div id="empty-state" class="empty-state hidden">
-                        <img src="https://cdni.iconscout.com/illustration/premium/thumb/empty-state-2130362-1800926.png"
-                            alt="No transactions" />
-                        <p>No transactions found.</p>
-                    </div>
-                </section>
-            </div>
-        </div>
-    </main>
-
-    <!-- Bottom Navigation Bar for Mobile -->
-    <nav class="bottom-nav">
-        <button class="nav-item active" data-view="home">
-            <i class="fas fa-list"></i>
-            <span>Home</span>
-        </button>
-        <button class="nav-item add-fab" data-view="add">
-            <div class="fab-icon-wrapper">
-                <i class="fas fa-plus"></i>
-            </div>
-        </button>
-        <button class="nav-item" data-view="analytics">
-            <i class="fas fa-chart-pie"></i>
-            <span>Analytics</span>
-        </button>
     </nav>
 
-    <script src="script.js"></script>
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content animate-on-scroll">
+            <h1>Manage Your Expenses <span class="text-gradient">Smartly</span> with DigiKhata</h1>
+            <p>Take control of your finances. Track your daily expenses, monitor your savings, and manage your budget
+                all in one beautiful, easy-to-use platform.</p>
+            <a href="login.html" class="btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">
+                Get Started <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="section-header animate-on-scroll">
+            <h2>Why Choose DigiKhata?</h2>
+            <p>Everything you need to manage your personal finances effectively.</p>
+        </div>
+
+        <div class="features-grid">
+            <!-- Feature 1 -->
+            <div class="feature-card animate-on-scroll delay-100">
+                <div class="feature-icon">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <h3>Expense Tracking</h3>
+                <p>Log your daily expenses instantly and categorize them to know exactly where your money goes.</p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="feature-card animate-on-scroll delay-200">
+                <div class="feature-icon">
+                    <i class="fas fa-piggy-bank"></i>
+                </div>
+                <h3>Savings Monitoring</h3>
+                <p>Set savings goals and track your progress over time. We help you stay on track and save more.</p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="feature-card animate-on-scroll delay-300">
+                <div class="feature-icon">
+                    <i class="fas fa-tags"></i>
+                </div>
+                <h3>Transaction Categories</h3>
+                <p>Organize your transactions with custom categories to get detailed insights into your spending habits.
+                </p>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="feature-card animate-on-scroll delay-400">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <h3>Financial Analytics</h3>
+                <p>Visualize your financial data with beautiful interactive charts and graphs to make informed
+                    decisions.</p>
+            </div>
+
+            <!-- Feature 5 -->
+            <div class="feature-card animate-on-scroll delay-500">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3>Mobile Friendly UI</h3>
+                <p>Access your finances on the go. Our platform is fully responsive and looks great on any device.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Removed About Us Section -->
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content animate-on-scroll">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <i class="fas fa-wallet"></i>
+                    DigiKhata
+                </a>
+                <p>Empowering you to make smarter financial decisions every day.</p>
+            </div>
+
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="login.html">Login</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Connect With Us</h4>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 DigiKhata. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Custom JS -->
+    <script src="home.js"></script>
 </body>
 
 </html>
